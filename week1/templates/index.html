@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>방명록</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; padding:16px; background:#fff; color:#111; }
+    .card{border:1px solid #e9e9e9;padding:12px;border-radius:6px;margin-bottom:12px;}
+    input, textarea {width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;}
+    button {padding:8px 12px;border-radius:6px;border:none;background:#007bff;color:#fff;cursor:pointer;}
+    ul{padding-left:0;list-style:none;margin:0;}
+    li{padding:10px 0;border-bottom:1px solid #f0f0f0;}
+    .meta{font-size:0.85rem;color:#666;}
+    pre{white-space:pre-wrap;font-family:inherit;margin:6px 0 0 0;}
+  </style>
+</head>
+<body>
+
+  <!-- 검색 (GET) -->
+  <section class="card" aria-label="검색">
+    <form action="{{ url_for('search') }}" method="get">
+      <label class="meta" for="q">검색어</label>
+      <input id="q" name="q" type="text" value="{{ q | default('') }}" placeholder="검색어 입력">
+      <div style="margin-top:8px;"><button type="submit">검색</button></div>
+    </form>
+    {% if search_mode %}
+      <!-- 결과를 그대로 보여줌: 과제용 Reflected XSS 재현 -->
+      <p class="meta" style="margin-top:8px;">검색 결과: <strong>{{ q }}</strong></p>
+    {% endif %}
+  </section>
+
+  <!-- 글쓰기 (POST) -->
+  <section class="card" aria-label="글쓰기">
+    <form action="{{ url_for('write') }}" method="post">
+      <label class="meta" for="name">이름</label>
+      <input id="name" name="name" type="text" maxlength="100" placeholder="이름">
+      <label class="meta" for="message" style="margin-top:8px;">메시지</label>
+      <textarea id="message" name="message" rows="4" maxlength="5000" placeholder="메시지"></textarea>
+      <div style="margin-top:8px;"><button type="submit">등록</button></div>
+    </form>
+  </section>
+
+  <!-- 방명록 목록 -->
+  <section class="card" aria-label="목록">
+    <h3 style="margin:0 0 8px 0;">{{ '검색 결과' if search_mode else '모든 방명록' }}</h3>
+    <ul>
+      {% if entries %}
+        {% for e in entries %}
+          <li>
+            <!-- sqlite3.Row는 dict처럼 인덱스로 접근 (e.get은 없음) -->
+            <div>
+              <strong>{{ e['name'] }}</strong>
+              <span class="meta">· {{ e['created_at'] if e['created_at'] else '' }}</span>
+            </div>
+            <!-- Stored XSS 재현: 메시지를 필터 없이 출력 (과제 목적). 안전하려면 |e 또는 |escape 사용 -->
+            <pre>{{ e['message'] | safe }}</pre>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li class="meta">등록된 글이 없습니다.</li>
+      {% endif %}
+    </ul>
+  </section>
+
+</body>
+</html>
