@@ -1,4 +1,4 @@
-# EVI$ION — YB 활동 README
+# EVI$ION — YB
 
 **작성자:** 오지송
 
