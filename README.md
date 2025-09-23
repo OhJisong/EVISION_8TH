@@ -25,12 +25,12 @@ EVI$ION 활동 : 웹 보안, 리버싱, 포너블(취약점 익스플로잇) 등
 ```
 EVISION/
 ├─ README.md
-├─ web-vuln/ # 취약 웹 앱 (방명록 등)
+├─ week1
 │ ├─ app.py
 │ ├─ templates/
-│ │ └─ index.html
-│ └─ init.sql
-├─ reversing/ # 리버싱 실습 자료
-├─ pwnable/ # 포너블 연습 문제
-└─ docs/ # 발표 자료, 슬라이드
+│   └─ index.html
+├─ webhacking/ # 웹해킹 공부
+├─ reversing/ # 리버싱 공부
+├─ pwnable/ # 포너블 공부
+└─ docs/ # 개인공부
 ```
