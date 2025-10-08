@@ -24,7 +24,7 @@ int __fastcall main(int argc, const char **argv, const char **envp)
 }
 ```
 
-![main 사진](https://github.com/OhJisong/EVISION_8TH/tree/main/week3/images/main.png)
+![main 사진](./images/main.png)
 
 ## 2. 분석 과정
 
@@ -58,4 +58,4 @@ int __fastcall main(int argc, const char **argv, const char **envp)
 ---
 
 ## 4. 사진 첨부
-![main 사진](https://github.com/OhJisong/EVISION_8TH/tree/main/week3/images/success.png)
+![main 사진](./images/success.png)
