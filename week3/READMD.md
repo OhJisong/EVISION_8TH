@@ -52,3 +52,8 @@ int __fastcall main(int argc, const char **argv, const char **envp)
 검색 결과, 비교 대상으로 사용되는 문자열을 아래와 같이 찾을 수 있습니다.
 
 `Compar3_the_str1ng`
+
+---
+
+## 4. 사진 첨부
+![성공 사진](https://github.com/YourUsername/YourRepo/blob/main/images/cat.jpg)
