@@ -45,7 +45,6 @@ int __fastcall main(int argc, const char **argv, const char **envp)
 -   **동작 방식**: 함수는 사용자가 입력한 문자열과 프로그램 내부에 숨겨진(하드코딩된) 특정 문자열을 **직접 비교**합니다.
 -   **핵심**: 이 **숨겨진 문자열**을 찾아내기만 하면 문제를 해결할 수 있습니다.
 
----
 
 ## 3. 해결 방법 🛠️
 
@@ -55,7 +54,87 @@ int __fastcall main(int argc, const char **argv, const char **envp)
 
 `Compar3_the_str1ng`
 
----
 
 ## 4. 사진 첨부
 ![main 사진](./images/success.png)
+
+---
+
+# C언어 빌드 및 IDA 리버싱 기초 과제
+
+C언어로 직접 간단한 프로그램을 만들고 이를 IDA 로 열어 원본 소스 코드와 IDA가 분석한 의사코드 및 어셈블리 코드를 비교하는 과정
+
+## 1. C언어 코드 작성
+먼저 숫자를 입력받아 특정 값과 비교하는 간단한 C 프로그램을 작성합니다.
+
+```
+#include <stdio.h>
+
+int main() {
+    int userInput; // 사용자의 입력을 저장할 변수
+
+    printf("Enter the secret number: ");
+
+    // 사용자로부터 정수 하나를 입력받습니다.
+    scanf("%d", &userInput);
+
+    // 입력받은 값이 1234와 같은지 비교합니다.
+    if (userInput == 1234) {
+        puts("Correct"); // 같다면 Correct 출력
+    } else {
+        puts("Wrong");   // 다르다면 Wrong 출력
+    }
+
+    return 0;
+}
+```
+
+## 2. EXE 파일로 컴파일하기
+
+작성한 C 코드를 실행 가능한 .exe 파일로 만듭니다.
+
+### 방법 1: Visual Studio 사용
+
+  1. Visual Studio에서 '콘솔 앱(Console App)' 프로젝트를 생성합니다.
+
+  2. 기본 코드를 지우고 위에서 작성한 코드를 붙여넣습니다.
+
+  3. 상단 메뉴에서 **빌드(Build) > 솔루션 빌드(Build Solution)**를 클릭하여 .exe 파일을 생성합니다.
+
+## 3단계: IDA로 EXE 파일 분석하기
+이제 컴파일된 compare.exe 파일을 IDA로 열어 분석합니다.
+
+### 의사코드(Pseudo-code)와 비교
+| 원본 C 코드 (`compare.c`) | IDA 의사코드 (예시) |
+| :--- | :--- |
+| `` `int userInput;` `` | `` `int v4;` `` |
+| `` `printf("Enter the secret number: ");` `` | `` `sub_4010F0("Enter the secret number: ");` `` |
+| `` `scanf("%d", &userInput);` `` | `` `scanf("%d", &v4);` `` |
+| `` `if (userInput == 1224)` `` | `` `if ( v4 == 1224 )` `` |
+| `` `puts("Correct");` `` | `` `puts("Correct");` `` |
+| `` `else { puts("Wrong"); }` `` | `` `else { puts("Wrong"); }` `` |
+
+### 분석 포인트
+
+* userInput과 같은 변수 이름이 v4처럼 의미 없는 이름으로 변경되었습니다.
+* printf와 같은 함수가 sub_주소값 형태의 내부 함수로 표현될 수 있습니다.
+* 하지만 if (v4 == 1234) 와 같은 핵심 비교 로직과 **상수(1234)**는 명확하게 남아있어 프로그램의 중요 동작을 파악할 수 있습니다.
+
+## 4단계: 어셈블리 뷰 분석
+if (userInput == 1234) 부분에 해당하는 코드는 다음과 같습니다.
+
+```
+; userInput 변수의 값을 eax 레지스터로 옮김
+mov     eax, [ebp+userInput]
+
+; eax의 값과 4D2h (16진수, 10진수로는 1234)를 비교
+cmp     eax, 4D2h
+
+; 비교 결과가 다르면(Not Zero) 특정 주소(loc_4010AA)로 점프
+jnz     short loc_4010AA
+```
+
+### 주요 명령어
+* mov: 데이터를 레지스터나 메모리로 **이동(복사)**합니다.
+* cmp: 두 값을 비교합니다. C언어의 == 연산자와 유사한 역할을 합니다.
+* jnz (Jump if Not Zero): cmp의 결과가 '같지 않으면' 다른 코드로 **분기(점프)**합니다. C언어의 if-else 구문을 구현하는 핵심적인 명령어입니다.
